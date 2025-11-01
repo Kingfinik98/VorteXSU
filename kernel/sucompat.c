@@ -48,39 +48,39 @@ bool ksu_su_compat_enabled __read_mostly = true;
 
 static int su_compat_feature_get(u64 *value)
 {
-	*value = ksu_su_compat_enabled ? 1 : 0;
-	return 0;
+    *value = ksu_su_compat_enabled ? 1 : 0;
+    return 0;
 }
 
 static int su_compat_feature_set(u64 value)
 {
-	bool enable = value != 0;
-	ksu_su_compat_enabled = enable;
-	pr_info("su_compat: set to %d\n", enable);
-	return 0;
+    bool enable = value != 0;
+    ksu_su_compat_enabled = enable;
+    pr_info("su_compat: set to %d\n", enable);
+    return 0;
 }
 
 static const struct ksu_feature_handler su_compat_handler = {
-	.feature_id = KSU_FEATURE_SU_COMPAT,
-	.name = "su_compat",
-	.get_handler = su_compat_feature_get,
-	.set_handler = su_compat_feature_set,
+    .feature_id = KSU_FEATURE_SU_COMPAT,
+    .name = "su_compat",
+    .get_handler = su_compat_feature_get,
+    .set_handler = su_compat_feature_set,
 };
 
 static void __user *userspace_stack_buffer(const void *d, size_t len)
 {
-	// To avoid having to mmap a page in userspace, just write below the stack
-	// pointer.
-	char __user *p = (void __user *)current_user_stack_pointer() - len;
+    // To avoid having to mmap a page in userspace, just write below the stack
+    // pointer.
+    char __user *p = (void __user *)current_user_stack_pointer() - len;
 
-	return copy_to_user(p, d, len) ? NULL : p;
+    return copy_to_user(p, d, len) ? NULL : p;
 }
 
 static char __user *sh_user_path(void)
 {
-	static const char sh_path[] = "/system/bin/sh";
+    static const char sh_path[] = "/system/bin/sh";
 
-	return userspace_stack_buffer(sh_path, sizeof(sh_path));
+    return userspace_stack_buffer(sh_path, sizeof(sh_path));
 }
 
 static const char sh_path[] = SH_PATH;
@@ -91,177 +91,182 @@ extern bool ksu_kernel_umount_enabled;
 
 // the call from execve_handler_pre won't provided correct value for __never_use_argument, use them after fix execve_handler_pre, keeping them for consistence for manually patched code
 int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
-				 void *__never_use_argv, void *__never_use_envp,
-				 int *__never_use_flags)
+                                 void *__never_use_argv, void *__never_use_envp,
+                                 int *__never_use_flags)
 {
-	struct filename *filename;
-	bool is_allowed = ksu_is_allow_uid_for_current(current_uid().val);
+    struct filename *filename;
+    bool is_allowed = ksu_is_allow_uid_for_current(current_uid().val);
 
-	if (!ksu_su_compat_enabled){
-		return 0;
-	}
+    if (!ksu_su_compat_enabled) {
+        return 0;
+    }
 
-	if (unlikely(!filename_ptr))
-		return 0;
+    if (unlikely(!filename_ptr))
+        return 0;
 
-	if (!is_allowed)
-		return 0;
+    if (!is_allowed)
+        return 0;
 
-	filename = *filename_ptr;
-	if (IS_ERR(filename)) {
-		return 0;
-	}
+    filename = *filename_ptr;
+    if (IS_ERR(filename)) {
+        return 0;
+    }
 
-	if (likely(memcmp(filename->name, su_path, sizeof(su_path))))
-		return 0;
+    if (likely(memcmp(filename->name, su_path, sizeof(su_path))))
+        return 0;
 
 #if __SULOG_GATE
-	ksu_sulog_report_syscall(current_uid().val, NULL, "execve", su_path);
-	ksu_sulog_report_su_attempt(current_uid().val, NULL, su_path, is_allowed);
+    ksu_sulog_report_syscall(current_uid().val, NULL, "execve", su_path);
+    ksu_sulog_report_su_attempt(current_uid().val, NULL, su_path, is_allowed);
 #endif
 
-	pr_info("do_execveat_common su found\n");
-	memcpy((void *)filename->name, ksud_path, sizeof(ksud_path));
+    pr_info("do_execveat_common su found\n");
+    memcpy((void *)filename->name, ksud_path, sizeof(ksud_path));
 
-	escape_with_root_profile();
+    escape_with_root_profile();
 
-	return 0;
+    return 0;
 }
 
 #if defined(CONFIG_KSU_SUSFS) || defined(CONFIG_KSU_MANUAL_HOOK)
-static inline void ksu_handle_execveat_init(struct filename **filename_ptr) {
-	struct filename *filename;
-	filename = *filename_ptr;
-	if (IS_ERR(filename)) {
-		return;
-	}
+static inline void ksu_handle_execveat_init(struct filename **filename_ptr)
+{
+    struct filename *filename;
+    filename = *filename_ptr;
+    if (IS_ERR(filename)) {
+        return;
+    }
 
     if (current->pid != 1 && is_init(get_current_cred())) {
         if (unlikely(strcmp(filename->name, KSUD_PATH) == 0)) {
-            pr_info("hook_manager: escape to root for init executing ksud: %d\n", current->pid);
+            pr_info(
+                "hook_manager: escape to root for init executing ksud: %d\n",
+                current->pid);
             escape_to_root_for_init();
-        } 
+        }
 #ifdef CONFIG_KSU_SUSFS
-		else if (likely(strstr(filename->name, "/app_process") == NULL && strstr(filename->name, "/adbd") == NULL)) {
-            pr_info("hook_manager: unmark %d exec %s\n", current->pid, filename->name);
+        else if (likely(strstr(filename->name, "/app_process") == NULL &&
+                        strstr(filename->name, "/adbd") == NULL)) {
+            pr_info("hook_manager: unmark %d exec %s\n", current->pid,
+                    filename->name);
             susfs_set_current_proc_umounted();
         }
 #endif
     }
 }
 
-
 extern bool ksu_execveat_hook __read_mostly;
 int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv,
-			void *envp, int *flags)
+                        void *envp, int *flags)
 {
-	ksu_handle_execveat_init(filename_ptr);
-	
-	if (unlikely(ksu_execveat_hook)) {
-		if (ksu_handle_execveat_ksud(fd, filename_ptr, argv, envp, flags)) {
-			return 0;
-		}
-	}
+    ksu_handle_execveat_init(filename_ptr);
 
-	return ksu_handle_execveat_sucompat(fd, filename_ptr, argv, envp,
-						flags);
+    if (unlikely(ksu_execveat_hook)) {
+        if (ksu_handle_execveat_ksud(fd, filename_ptr, argv, envp, flags)) {
+            return 0;
+        }
+    }
+
+    return ksu_handle_execveat_sucompat(fd, filename_ptr, argv, envp, flags);
 }
 #endif
 
 int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,
-			 int *__unused_flags)
+                         int *__unused_flags)
 {
-	char path[sizeof(su_path) + 1] = {0};
+    char path[sizeof(su_path) + 1] = { 0 };
 
-	if (!ksu_su_compat_enabled){
-		return 0;
-	}
+    if (!ksu_su_compat_enabled) {
+        return 0;
+    }
 
-	if (!ksu_is_allow_uid_for_current(current_uid().val))
-		return 0;
+    if (!ksu_is_allow_uid_for_current(current_uid().val))
+        return 0;
 
-	ksu_strncpy_from_user_nofault(path, *filename_user, sizeof(path));
+    ksu_strncpy_from_user_nofault(path, *filename_user, sizeof(path));
 
-	if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
+    if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
 #if __SULOG_GATE
-		ksu_sulog_report_syscall(current_uid().val, NULL, "faccessat", path);
+        ksu_sulog_report_syscall(current_uid().val, NULL, "faccessat", path);
 #endif
-		pr_info("faccessat su->sh!\n");
-		*filename_user = sh_user_path();
-	}
+        pr_info("faccessat su->sh!\n");
+        *filename_user = sh_user_path();
+    }
 
-	return 0;
+    return 0;
 }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) && defined(CONFIG_KSU_SUSFS)
-int ksu_handle_stat(int *dfd, struct filename **filename, int *flags) {
-	if (!ksu_su_compat_enabled){
-		return 0;
-	}
+int ksu_handle_stat(int *dfd, struct filename **filename, int *flags)
+{
+    if (!ksu_su_compat_enabled) {
+        return 0;
+    }
 
-	if (!ksu_is_allow_uid_for_current(current_uid().val))
-		return 0;
+    if (!ksu_is_allow_uid_for_current(current_uid().val))
+        return 0;
 
-	if (unlikely(IS_ERR(*filename) || (*filename)->name == NULL)) {
-		return 0;
-	}
- 
-	if (likely(memcmp((*filename)->name, su_path, sizeof(su_path)))) {
-		return 0;
-	}
+    if (unlikely(IS_ERR(*filename) || (*filename)->name == NULL)) {
+        return 0;
+    }
+
+    if (likely(memcmp((*filename)->name, su_path, sizeof(su_path)))) {
+        return 0;
+    }
 
 #if __SULOG_GATE
-	ksu_sulog_report_syscall(current_uid().val, NULL, "newfstatat", (*filename)->name);
+    ksu_sulog_report_syscall(current_uid().val, NULL, "newfstatat",
+                             (*filename)->name);
 #endif
-	pr_info("ksu_handle_stat: su->sh!\n");
-	memcpy((void *)((*filename)->name), sh_path, sizeof(sh_path));
-	return 0;
+    pr_info("ksu_handle_stat: su->sh!\n");
+    memcpy((void *)((*filename)->name), sh_path, sizeof(sh_path));
+    return 0;
 }
 #else
 int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags)
 {
-	char path[sizeof(su_path) + 1] = {0};
+    char path[sizeof(su_path) + 1] = { 0 };
 
-	if (!ksu_su_compat_enabled){
-		return 0;
-	}
+    if (!ksu_su_compat_enabled) {
+        return 0;
+    }
 
-	if (unlikely(!filename_user)) {
-		return 0;
-	}
+    if (unlikely(!filename_user)) {
+        return 0;
+    }
 
-	if (!ksu_is_allow_uid_for_current(current_uid().val))
-		return 0;
+    if (!ksu_is_allow_uid_for_current(current_uid().val))
+        return 0;
 
-	ksu_strncpy_from_user_nofault(path, *filename_user, sizeof(path));
+    ksu_strncpy_from_user_nofault(path, *filename_user, sizeof(path));
 
-	if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
+    if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
 #if __SULOG_GATE
-		ksu_sulog_report_syscall(current_uid().val, NULL, "newfstatat", path);
+        ksu_sulog_report_syscall(current_uid().val, NULL, "newfstatat", path);
 #endif
-		pr_info("ksu_handle_stat: su->sh!\n");
-		*filename_user = sh_user_path();
-	}
+        pr_info("ksu_handle_stat: su->sh!\n");
+        *filename_user = sh_user_path();
+    }
 
-	return 0;
+    return 0;
 }
 #endif // #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
 
 // dead code: devpts handling
 int __maybe_unused ksu_handle_devpts(struct inode *inode)
 {
-	return 0;
+    return 0;
 }
 
 // sucompat: permitted process can execute 'su' to gain root access.
 void ksu_sucompat_init()
 {
-	if (ksu_register_feature_handler(&su_compat_handler)) {
-		pr_err("Failed to register su_compat feature handler\n");
-	}
+    if (ksu_register_feature_handler(&su_compat_handler)) {
+        pr_err("Failed to register su_compat feature handler\n");
+    }
 }
 
 void ksu_sucompat_exit()
 {
-	ksu_unregister_feature_handler(KSU_FEATURE_SU_COMPAT);
+    ksu_unregister_feature_handler(KSU_FEATURE_SU_COMPAT);
 }

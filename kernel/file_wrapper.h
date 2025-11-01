@@ -5,8 +5,8 @@
 #include <linux/fs.h>
 
 struct ksu_file_wrapper {
-	struct file *orig;
-	struct file_operations ops;
+    struct file *orig;
+    struct file_operations ops;
 };
 
 struct ksu_file_wrapper *ksu_create_file_wrapper(struct file *fp);
