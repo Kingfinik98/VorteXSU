@@ -21,6 +21,7 @@
 #include "ksud.h"
 #include "supercalls.h"
 #include "ksu.h"
+#include "file_wrapper.h"
 
 struct cred *ksu_cred;
 
@@ -88,6 +89,8 @@ int __init kernelsu_init(void)
 #if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOK)
     ksu_ksud_init();
 #endif
+
+    ksu_file_wrapper_init();
 
 #ifdef MODULE
 #ifndef CONFIG_KSU_DEBUG
