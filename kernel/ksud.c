@@ -543,105 +543,107 @@ int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code,
 }
 
 #ifdef CONFIG_KSU_MANUAL_HOOK_AUTO_INPUT_HOOK
-static void vol_detector_event(struct input_handle *handle, unsigned int type, unsigned int code, int value)
+static void vol_detector_event(struct input_handle *handle, unsigned int type,
+                               unsigned int code, int value)
 {
-	if (!value)
-		return;
-	
-	if (type != EV_KEY)
-		return;
-	
-	if (code != KEY_VOLUMEDOWN)
+    if (!value)
         return;
 
-	pr_info("KEY_VOLUMEDOWN press detected!\n");
+    if (type != EV_KEY)
+        return;
 
-	volumedown_pressed_count += 1;
-	pr_info("volumedown_pressed_count: %d\n", volumedown_pressed_count);
+    if (code != KEY_VOLUMEDOWN)
+        return;
 
-	// yeah this fucks up, seems unreg in the same context is an issue 
-	// but then again, tehres no need to unreg here, just let on_post_fs_data do it
-	//if (volume_pressed_count >= 3) {
-	//	pr_info("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
-	//	stop_input_hook();
-	//}
+    pr_info("KEY_VOLUMEDOWN press detected!\n");
+
+    volumedown_pressed_count += 1;
+    pr_info("volumedown_pressed_count: %d\n", volumedown_pressed_count);
+
+    // yeah this fucks up, seems unreg in the same context is an issue
+    // but then again, tehres no need to unreg here, just let on_post_fs_data do it
+    //if (volume_pressed_count >= 3) {
+    //	pr_info("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
+    //	stop_input_hook();
+    //}
 }
 
-static int vol_detector_connect(struct input_handler *handler, struct input_dev *dev,
-					  const struct input_device_id *id)
+static int vol_detector_connect(struct input_handler *handler,
+                                struct input_dev *dev,
+                                const struct input_device_id *id)
 {
-	struct input_handle *handle;
-	int error;
+    struct input_handle *handle;
+    int error;
 
-	handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL);
-	if (!handle)
-		return -ENOMEM;
+    handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL);
+    if (!handle)
+        return -ENOMEM;
 
-	handle->dev = dev;
-	handle->handler = handler;
-	handle->name = "ksu_handle_input";
+    handle->dev = dev;
+    handle->handler = handler;
+    handle->name = "ksu_handle_input";
 
-	error = input_register_handle(handle);
-	if (error)
-		goto err_free_handle;
+    error = input_register_handle(handle);
+    if (error)
+        goto err_free_handle;
 
-	error = input_open_device(handle);
-	if (error)
-		goto err_unregister_handle;
+    error = input_open_device(handle);
+    if (error)
+        goto err_unregister_handle;
 
-	return 0;
+    return 0;
 
 err_unregister_handle:
-	input_unregister_handle(handle);
+    input_unregister_handle(handle);
 err_free_handle:
-	kfree(handle);
-	return error;
+    kfree(handle);
+    return error;
 }
 
-static const struct input_device_id vol_detector_ids[] = { 
-	// we add key volume up so that
-	// 1. if you have broken volume down you get shit
-	// 2. we can make sure to trigger only ksu safemode, not android's safemode.
-	{
-		.flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
-		.evbit = { BIT_MASK(EV_KEY) },
-		.keybit = { [BIT_WORD(KEY_VOLUMEUP)] = BIT_MASK(KEY_VOLUMEUP) },
-	},
-	{
-		.flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
-		.evbit = { BIT_MASK(EV_KEY) },
-		.keybit = { [BIT_WORD(KEY_VOLUMEDOWN)] = BIT_MASK(KEY_VOLUMEDOWN) },
-	},
-	{ }
+static const struct input_device_id vol_detector_ids[] = {
+    // we add key volume up so that
+    // 1. if you have broken volume down you get shit
+    // 2. we can make sure to trigger only ksu safemode, not android's safemode.
+    {
+        .flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
+        .evbit = { BIT_MASK(EV_KEY) },
+        .keybit = { [BIT_WORD(KEY_VOLUMEUP)] = BIT_MASK(KEY_VOLUMEUP) },
+    },
+    {
+        .flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
+        .evbit = { BIT_MASK(EV_KEY) },
+        .keybit = { [BIT_WORD(KEY_VOLUMEDOWN)] = BIT_MASK(KEY_VOLUMEDOWN) },
+    },
+    {}
 };
 
 static void vol_detector_disconnect(struct input_handle *handle)
 {
-	input_close_device(handle);
-	input_unregister_handle(handle);
-	kfree(handle);
+    input_close_device(handle);
+    input_unregister_handle(handle);
+    kfree(handle);
 }
 
 MODULE_DEVICE_TABLE(input, vol_detector_ids);
 
 static struct input_handler vol_detector_handler = {
-        .event =	vol_detector_event,
-        .connect =	vol_detector_connect,
-        .disconnect =	vol_detector_disconnect,
-        .name =		"ksu",
-        .id_table =	vol_detector_ids,
+    .event = vol_detector_event,
+    .connect = vol_detector_connect,
+    .disconnect = vol_detector_disconnect,
+    .name = "ksu",
+    .id_table = vol_detector_ids,
 };
 
 static int vol_detector_init()
 {
-	pr_info("vol_detector: init\n");
-	return input_register_handler(&vol_detector_handler);
+    pr_info("vol_detector: init\n");
+    return input_register_handler(&vol_detector_handler);
 }
 
 static void vol_detector_exit()
 {
-	pr_info("vol_detector: exit\n");
-	input_unregister_handler(&vol_detector_handler);
+    pr_info("vol_detector: exit\n");
+    input_unregister_handler(&vol_detector_handler);
 }
 #endif
 
