@@ -27,7 +27,10 @@ use crate::{
         module::ModuleType::{Active, All},
         restorecon::{restore_syscon, setsyscon},
         sepolicy,
-        utils::*,
+        utils::{
+            ensure_clean_dir, ensure_dir_exists, ensure_file_exists, get_zip_uncompressed_size,
+            getprop, switch_cgroups,
+        },
     },
     assets, defs,
     defs::{MODULE_DIR, MODULE_UPDATE_DIR, UPDATE_FILE_NAME},
