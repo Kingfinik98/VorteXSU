@@ -53,7 +53,7 @@
 
 // Pershoot/Pershoot
 #define EXPECTED_SIZE_Pershoot 0x338
-#define EXPECTED_HASH_Pershoot                                                     \
+#define EXPECTED_HASH_Pershoot                                                  \
     "f26471a28031130362bce7eebffb9a0b8afc3095f163ce0c75a309f03b644a1f"
 
 // Dynamic Sign
