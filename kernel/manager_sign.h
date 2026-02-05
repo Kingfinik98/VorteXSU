@@ -51,7 +51,7 @@
 #define EXPECTED_HASH_WILD                                                     \
     "52d52d8c8bfbe53dc2b6ff1c613184e2c03013e090fe8905d8e3d5dc2658c2e4"
 
-// KernelSU-Next Pershoot/KernelSU-Next Pershoot
+// Pershoot/Pershoot
 #define EXPECTED_SIZE_0x338 0x338
 #define EXPECTED_HASH_0x338                                                     \
     "f26471a28031130362bce7eebffb9a0b8afc3095f163ce0c75a309f03b644a1f"
