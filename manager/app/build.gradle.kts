@@ -26,17 +26,17 @@ apksign {
 android {
     namespace = "com.resukisu.resukisu"
 
-    // === PERBAIKAN SIGNING CONFIG ===
+    // === PERBAIKAN PATH: MENGARAH KE ROOT REPO ==
     signingConfigs {
         create("release") {
-            // Gunakan rootProject.file agar mencari di folder 'manager/', bukan 'manager/app/'
-            storeFile = rootProject.file(project.findProperty("KEYSTORE_FILE") ?: "key.jks")
+            // Path "../vorte-key.jks" artinya: keluar dari folder 'manager', lalu cari file 'vorte-key.jks'
+            storeFile = rootProject.file("../vorte-key.jks")
             storePassword = project.findProperty("KEYSTORE_PASSWORD") as String?
             keyAlias = project.findProperty("KEY_ALIAS") as String?
             keyPassword = project.findProperty("KEY_PASSWORD") as String?
         }
     }
-    // ================================
+    // ===========================================
 
     buildTypes {
         release {
@@ -45,7 +45,6 @@ android {
             vcsInfo.include = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             
-            // Paksa pakai signing config di atas
             signingConfig = signingConfigs.getByName("release")
         }
     }
