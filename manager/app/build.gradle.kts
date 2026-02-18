@@ -16,7 +16,6 @@ val managerVersionCode: Int by rootProject.extra
 val managerVersionName: String by rootProject.extra
 val androidCmakeVersion: String by rootProject.extra
 
-// Biarkan ini ada, tapi kita akan paksa pakai config di bawah
 apksign {
     storeFileProperty = "KEYSTORE_FILE"
     storePasswordProperty = "KEYSTORE_PASSWORD"
@@ -27,17 +26,17 @@ apksign {
 android {
     namespace = "com.resukisu.resukisu"
 
-    // === TAMBAHAN PENTING: NATIVE SIGNING CONFIG ===
+    // === PERBAIKAN SIGNING CONFIG ===
     signingConfigs {
         create("release") {
-            // Membaca dari gradle.properties yang diisi GitHub Actions
-            storeFile = file(project.findProperty("KEYSTORE_FILE") ?: "key.jks")
+            // Gunakan rootProject.file agar mencari di folder 'manager/', bukan 'manager/app/'
+            storeFile = rootProject.file(project.findProperty("KEYSTORE_FILE") ?: "key.jks")
             storePassword = project.findProperty("KEYSTORE_PASSWORD") as String?
             keyAlias = project.findProperty("KEY_ALIAS") as String?
             keyPassword = project.findProperty("KEY_PASSWORD") as String?
         }
     }
-    // ===============================================
+    // ================================
 
     buildTypes {
         release {
@@ -46,9 +45,8 @@ android {
             vcsInfo.include = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             
-            // === TAMBAHAN PENTING: PAKSA PAKAI SIGNING RELEASE ===
+            // Paksa pakai signing config di atas
             signingConfig = signingConfigs.getByName("release")
-            // ====================================================
         }
     }
 
