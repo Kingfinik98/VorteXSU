@@ -43,8 +43,8 @@ obj-$(CONFIG_KSU) += kernelsu.o
 
 obj-$(CONFIG_KPM) += kpm/
 
-REPO_OWNER := ReSukiSU
-REPO_NAME := ReSukiSU
+REPO_OWNER := VortexSU
+REPO_NAME := VortexSU
 REPO_BRANCH := main
 KSU_VERSION_API := 4.1.0
 
@@ -75,7 +75,7 @@ ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
 ccflags-y += -DKSU_VERSION_FULL=\"$(KSU_VERSION_FULL)\"
 
 ifeq ($(CONFIG_KSU_MULTI_MANAGER_SUPPORT), y)
-$(info -- Supported Unofficial Manager: ReSukiSU, SukiSU-Ultra, RKSU, MAMBO, KSU_NEXT, WILD_KSU )
+$(info -- Supported Unofficial Manager: VortexSU, SukiSU-Ultra, RKSU, MAMBO, KSU_NEXT, WILD_KSU )
 endif
 
 ifeq ($(CONFIG_KSU_MANUAL_HOOK), y)

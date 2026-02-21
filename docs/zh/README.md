@@ -1,4 +1,4 @@
-# ReSukiSU
+# VortexSU
 <img align='right' src='SukiSU-mini.svg' width='220px' alt="sukisu logo">
 
 
@@ -6,8 +6,8 @@
 
 一个 [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-Ultra) 的下游分支,添加了一些有趣的变更，且更加稳定。
 
-[![最新发行](https://img.shields.io/github/v/release/ReSukiSU/ReSukiSU?label=Release&logo=github)](https://github.com/ReSukiSU/ReSukiSU/releases/latest)
-[![频道](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/ReSukiSU)
+[![最新发行](https://img.shields.io/github/v/release/VortexSU/VortexSU?label=Release&logo=github)](https://github.com/VortexSU/VortexSU/releases/latest)
+[![频道](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/VortexSU)
 [![协议: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![GitHub 协议](https://img.shields.io/github/license/tiann/KernelSU?logo=gnu)](/LICENSE)
 
@@ -23,23 +23,23 @@
 
 ## 兼容状态
 
-- ReSukiSU 官方支持 GKI 2.0 的设备（内核版本 5.10 以上）。
+- VortexSU 官方支持 GKI 2.0 的设备（内核版本 5.10 以上）。
 
 - 旧内核也是兼容的（最低 4.14+），不过需要自己编译内核。
 
-- 通过更多的反向移植，ReSukiSU 可以支持 3.x 内核（3.4-3.18）。
+- 通过更多的反向移植，VortexSU 可以支持 3.x 内核（3.4-3.18）。
 
 - 目前支持架构 : `arm64-v8a`、`armeabi-v7a (bare)`、`X86_64`。
 
 ## 集成
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash
+curl -LSs "https://raw.githubusercontent.com/VortexSU/VortexSU/main/kernel/setup.sh" | bash
 ```
 
 ## 参与翻译
 
-要将 SukiSU 翻译成您的语言，或完善现有的翻译，请使用 [Crowdin](https://crowdin.com/project/ReSukiSU).
+要将 SukiSU 翻译成您的语言，或完善现有的翻译，请使用 [Crowdin](https://crowdin.com/project/VortexSU).
 
 ## KPM 支持
 

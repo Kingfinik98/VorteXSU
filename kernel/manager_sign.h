@@ -26,7 +26,7 @@
 #define EXPECTED_HASH_NEKO                                                     \
     "946b0557e450a6430a0ba6b6bccee5bc12953ec8735d55e26139b0ec12303b21"
 
-// ReSukiSU/ReSukiSU
+// VortexSU/VortexSU
 #define EXPECTED_SIZE_RESUKISU 0x377
 #define EXPECTED_HASH_RESUKISU                                                 \
     "d3469712b6214462764a1d8d3e5cbe1d6819a0b629791b9f4101867821f1df64"
