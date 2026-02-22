@@ -1,4 +1,4 @@
-# FORK => VortexSU, 
+# FORK => ReSukiSU, 
 UNOFFICIAL 
 MANAGER SUPPORT: MamboSU, KowSU, RKSU, SukiSU, KernelSU-Next, WildKSU
 <img align='right' src='SukiSU-mini.svg' width='220px' alt="sukisu logo">
@@ -8,8 +8,8 @@ MANAGER SUPPORT: MamboSU, KowSU, RKSU, SukiSU, KernelSU-Next, WildKSU
 
 A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-Ultra) fork, added some interesting changes, also make it more stable and build easily.
 
-[![Latest release](https://img.shields.io/github/v/release/VortexSU/VortexSU?label=Release&logo=github)](https://github.com/VortexSU/VortexSU/releases/latest)
-[![Channel](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/vortex_SU)
+[![Latest release](https://img.shields.io/github/v/release/ReSukiSU/ReSukiSU?label=Release&logo=github)](https://github.com/ReSukiSU/ReSukiSU/releases/latest)
+[![Channel](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/ReSukisu)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![GitHub License](https://img.shields.io/github/license/tiann/KernelSU?logo=gnu)](/LICENSE)
 
@@ -17,7 +17,7 @@ A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-
 
 1. Kernel-based `su` and root access management
 2. Module system based on [Magic Mount](https://github.com/5ec1cff/KernelSU)
-   > **Note:** VortexSU now delegates all module mounting to the installed *metamodule*; the core no longer handles mount operations.
+   > **Note:** ReSukiSU now delegates all module mounting to the installed *metamodule*; the core no longer handles mount operations.
 3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage
 4. Support non-GKI and GKI 1.0
 5. KPM Support
@@ -25,7 +25,7 @@ A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-
 
 ## Compatibility Status
 
-- VortexSU officially supports Android GKI 2.0 devices (kernel 5.10+).
+- ReSukiSU officially supports Android GKI 2.0 devices (kernel 5.10+).
 
 - Older kernels (4.4+) are also compatible, but the kernel will have to be built manually.
 
@@ -37,10 +37,11 @@ A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-
 
 ```sh
 curl -LSs "https://raw.githubusercontent.com/Kingfinik98/VortexSU/refs/heads/main/kernel/setup.sh" | bash -s main
+```
 
 ## Translation
 
-If you need to submit a translation for the manager, please go to [Crowdin](https://crowdin.com/project/VortexSU).
+If you need to submit a translation for the manager, please go to [Crowdin](https://crowdin.com/project/ReSukiSU).
 
 ## KPM Support
 
