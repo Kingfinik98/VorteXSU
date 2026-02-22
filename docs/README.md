@@ -43,7 +43,7 @@ Supported managers:
 
 Use the following command to integrate VORTEXSU into your kernel source:
 
-curl -LSs "https://raw.githubusercontent.com/Kingfinik98/VortexSU/refs/heads/main/kernel/setup.sh" | bash -s main
+"curl -LSs "https://raw.githubusercontent.com/Kingfinik98/VortexSU/refs/heads/main/kernel/setup.sh" | bash -s main"
 
 ---
 
