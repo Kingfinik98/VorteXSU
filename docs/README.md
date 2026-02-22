@@ -16,14 +16,14 @@ Distribution: Unofficial Open Source
 ---
 
 ## Features
-
+```
 - Kernel-based root implementation
 - Fully working patch system
 - Clean and modular integration
 - Lightweight and optimized
 - Multi-manager compatibility
 - Suitable for OSS kernel builds
-
+```
 ---
 
 ## Manager Support
